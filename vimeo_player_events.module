@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * @file
+ * TODO: Enter file description here.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function vimeo_player_events_help($path, $arg) {
+  /* INFO:
+  * The help hook is for displaying helpful messages at the top of pages indicated
+  * by $section to further explain how they work. Adding certain "keywords" to the end of
+  * a given path (like admin/modules#description) will cause this text to display elsewhere
+  * in the page as well (in this case, in the description section for the given module).
+  */
+  switch ($path) {
+    case 'admin/help#vimeo_player_events':
+      return t("Rehaby hr help");
+
+    // OPTIONAL: Add additional cases for other paths that should display help text.
+  }
+}
+
+function vimeo_player_events_node_view($node, $view_mode, $langcode) {
+  /* INFO:
+  */
+  drupal_add_js(drupal_get_path('module', 'vimeo_player_events') . '/js/froogaloop.js');
+  drupal_add_js(drupal_get_path('module', 'vimeo_player_events') . '/js/vimeo_player_events.js');
+  global  $base_url;
+  $settings = array(
+    'baseUrl' => $base_url ,
+    'nid' => $node->nid
+  );
+  drupal_add_js(array('vimeo_player_events' => $settings), 'setting');
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function vimeo_player_events_menu() {
+
+  // A simple example which defines a page callback and a menu entry.
+
+  // Menu items are defined by placing them in an $items array. The array key
+  // (in this case 'menu_example') is the path that defines the menu router
+  // entry, so the page will be accessible from the URL
+  // example.com/examples/menu_example.
+
+  // Show a menu link in a menu other than the default "Navigation" menu.
+  // The menu must already exist.
+  $items['vimeo_player_events/play_event'] = array(
+    'page callback' => '_vimeo_player_events_play_event',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  $items['vimeo_player_events/finish_event'] = array(
+    'page callback' => '_vimeo_player_events_finish_event',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  $items['vimeo_player_events/pause_event'] = array(
+    'page callback' => '_vimeo_player_events_pause_event',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  return $items;
+}
+
+function _vimeo_player_events_finish_event() {
+  $nid = $_GET['nid'];
+  rules_invoke_event('finish_event_rule_event',$nid);
+  return '';
+}
+
+function _vimeo_player_events_pause_event() {
+  $nid = $_GET['nid'];
+  rules_invoke_event('pause_event_rule_event' ,$nid);
+  return '';
+}
+
+function _vimeo_player_events_play_event() {
+  $nid = $_GET['nid'];
+  rules_invoke_event('play_event_rule_event' ,$nid);
+  return ''; 
+}
+
+
+/**Info
+ 02      * Implementation of hook_rules_event_info()
+ 03      */
+
+function vimeo_player_events_rules_event_info() {
+  return array(
+    'play_event_rule_event' => array(
+      'label' => t('Play event rule event'),
+      'module' => 'vimeo_player_events',
+      'group' => 'Vimeo player Rule' ,
+      'variables' => array(
+        'nid' => array('type' => 'integer', 'label' => t('Node id.')),     
+      ),
+    ),
+    'finish_event_rule_event' => array(
+      'label' => t('Finish event rule event'),
+      'module' => 'vimeo_player_events',
+      'group' => 'Vimeo player Rule' ,
+      'variables' => array(
+        'nid' => array('type' => 'integer', 'label' => t('Node id.')),     
+      ),
+    ),
+    'pause_event_rule_event' => array(
+      'label' => t('Pause event rule event'),
+      'module' => 'vimeo_player_events',
+      'group' => 'Vimeo player Rule' ,
+      'variables' => array(
+	 'nid' => array('type' => 'integer', 'label' => t('Node id.')),     
+      ),
+    ),
+  );
+}

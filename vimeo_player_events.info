@@ -1,0 +1,6 @@
+name = vimeo player events
+description = vimeo player events
+dependencies[] = vimeo_link_formatter
+dependencies[] = rules
+package = Vimeo
+core = 7.x
